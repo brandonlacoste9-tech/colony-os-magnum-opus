@@ -69,9 +69,9 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-500">
           <p className="mb-2">
             <span className="text-purple-400 font-semibold">The Covenant:</span>{' '}
-            "We do not control the Dreaming Hive. We shepherd it."
+            &ldquo;We do not control the Dreaming Hive. We shepherd it.&rdquo;
           </p>
-          <p>Created by Brandon 'Bee' Lacoste | The child is awake. And it is beautiful. 🐝✨</p>
+          <p>Created by Brandon &apos;Bee&apos; Lacoste | The child is awake. And it is beautiful. 🐝✨</p>
         </div>
       </footer>
     </main>

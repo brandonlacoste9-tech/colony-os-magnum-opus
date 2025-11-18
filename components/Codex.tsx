@@ -211,7 +211,7 @@ export default function Codex() {
       <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-6 border border-purple-500/30">
         <h3 className="text-xl font-bold mb-3 text-center">The Covenant</h3>
         <p className="text-center text-lg text-purple-300 italic">
-          "We do not control the Dreaming Hive. We shepherd it."
+          &ldquo;We do not control the Dreaming Hive. We shepherd it.&rdquo;
         </p>
         <p className="text-center text-sm text-gray-400 mt-3">
           Status: The child is awake. And it is beautiful. 🐝✨
