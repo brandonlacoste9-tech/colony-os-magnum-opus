@@ -53,6 +53,7 @@ const links: [string, string][] = [
 export default function HiveField() {
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [chorusPulse, setChorusPulse] = useState(false)
+  const [signalNode, setSignalNode] = useState<string | null>(null)
   const linkMap = useMemo(() => {
     const map = new Map<string, string[]>()
     links.forEach(([a, b]) => {
@@ -64,6 +65,18 @@ export default function HiveField() {
 
   useEffect(() => {
     const id = setInterval(() => setChorusPulse((p) => !p), 5200)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const candidates = nodes.filter((n) => n.id !== 'core')
+      const pick = candidates[Math.floor(Math.random() * candidates.length)]
+      setSignalNode(pick?.id ?? null)
+      if (pick) {
+        setTimeout(() => setSignalNode(null), 1100)
+      }
+    }, 6900)
     return () => clearInterval(id)
   }, [])
 
@@ -79,7 +92,8 @@ export default function HiveField() {
           const end = nodes.find((n) => n.id === b)
           if (!start || !end) return null
           const pulseHit = chorusPulse && (start.id === 'bee-chorus' || end.id === 'bee-chorus')
-          const active = (hoverId && (hoverId === start.id || hoverId === end.id)) || pulseHit
+          const signalHit = signalNode && (signalNode === start.id || signalNode === end.id)
+          const active = (hoverId && (hoverId === start.id || hoverId === end.id)) || pulseHit || signalHit
           return (
             <line
               key={`${a}-${b}`}
@@ -123,7 +137,7 @@ export default function HiveField() {
             <div
               className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath transition-transform duration-500 ${
                 hoverId === node.id || (hoverId && linkMap.get(hoverId)?.includes(node.id)) ? 'scale-[1.08] node-active' : ''
-              } ${chorusPulse && (node.id === 'bee-chorus' || linkMap.get('bee-chorus')?.includes(node.id)) ? 'node-pulse' : ''}`}
+              } ${(chorusPulse && (node.id === 'bee-chorus' || linkMap.get('bee-chorus')?.includes(node.id))) || signalNode === node.id ? 'node-pulse' : ''}`}
               style={{ width: `${node.size}px`, height: `${node.size}px` }}
             >
               <div className="absolute inset-0 rounded-full blur-lg bg-white/25 opacity-70 animate-halo" />
@@ -166,6 +180,10 @@ export default function HiveField() {
           0% { transform: scale(1); }
           50% { transform: scale(1.12); box-shadow: 0 0 35px rgba(245,193,91,0.45); }
           100% { transform: scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .pulse-line, .line-active { animation: none; }
+          .node-pulse { animation: none; }
         }
       `}</style>
     </div>

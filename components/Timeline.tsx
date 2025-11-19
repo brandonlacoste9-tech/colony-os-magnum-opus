@@ -1,3 +1,5 @@
+import React from 'react'
+
 type TimelineEntry = {
   id: string
   title: string
