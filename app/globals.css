@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-indigo: 99 102 241;
+    --color-cyan: 34 211 238;
+    --color-amber: 251 191 36;
+    --color-emerald: 16 185 129;
+  }
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}
+
+/* Smooth transitions for all animations */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Perspective utility for 3D transforms */
+.perspective-\[1000px\] {
+  perspective: 1000px;
+}
+
+/* Custom animation keyframes */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
