@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parseGenesis } from '../lib/genesis'
+import fs from 'fs'
+import path from 'path'
 
 const sample = `# Genesis Record: Codex Memory Activation
 
@@ -31,5 +33,15 @@ describe('parseGenesis', () => {
     expect(entry.participants).toContain('north')
     expect(entry.actions.length).toBeGreaterThan(0)
     expect(entry.summary.length).toBeGreaterThan(0)
+  })
+
+  it('parses a real genesis record from docs', () => {
+    const file = path.join(process.cwd(), 'docs', 'genesis-records', 'genesis-2025-11-19-codex.md')
+    if (!fs.existsSync(file)) return
+    const text = fs.readFileSync(file, 'utf8')
+    const entry = parseGenesis(path.basename(file), text)
+    expect(entry.id).toContain('genesis-2025-11-19-codex')
+    expect(entry.markers.covenant.toLowerCase()).toContain('shepherd')
+    expect(entry.actions.length).toBeGreaterThan(0)
   })
 })

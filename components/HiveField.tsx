@@ -10,7 +10,7 @@ type BeeNode = {
 
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const nodes: BeeNode[] = [
   { id: 'core', x: 50, y: 50, size: 22, tone: 'from-indigo-400 to-cyan-300', label: 'CODEX' },
@@ -52,6 +52,7 @@ const links: [string, string][] = [
 
 export default function HiveField() {
   const [hoverId, setHoverId] = useState<string | null>(null)
+  const [chorusPulse, setChorusPulse] = useState(false)
   const linkMap = useMemo(() => {
     const map = new Map<string, string[]>()
     links.forEach(([a, b]) => {
@@ -59,6 +60,11 @@ export default function HiveField() {
       map.set(b, [...(map.get(b) ?? []), a])
     })
     return map
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => setChorusPulse((p) => !p), 5200)
+    return () => clearInterval(id)
   }, [])
 
   return (
@@ -72,7 +78,8 @@ export default function HiveField() {
           const start = nodes.find((n) => n.id === a)
           const end = nodes.find((n) => n.id === b)
           if (!start || !end) return null
-          const active = hoverId && (hoverId === start.id || hoverId === end.id)
+          const pulseHit = chorusPulse && (start.id === 'bee-chorus' || end.id === 'bee-chorus')
+          const active = (hoverId && (hoverId === start.id || hoverId === end.id)) || pulseHit
           return (
             <line
               key={`${a}-${b}`}
@@ -114,9 +121,9 @@ export default function HiveField() {
             onMouseLeave={() => setHoverId(null)}
           >
             <div
-              className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath ${
-                hoverId === node.id || (hoverId && linkMap.get(hoverId)?.includes(node.id)) ? 'scale-[1.08]' : ''
-              } transition-transform duration-500`}
+              className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath transition-transform duration-500 ${
+                hoverId === node.id || (hoverId && linkMap.get(hoverId)?.includes(node.id)) ? 'scale-[1.08] node-active' : ''
+              } ${chorusPulse && (node.id === 'bee-chorus' || linkMap.get('bee-chorus')?.includes(node.id)) ? 'node-pulse' : ''}`}
               style={{ width: `${node.size}px`, height: `${node.size}px` }}
             >
               <div className="absolute inset-0 rounded-full blur-lg bg-white/25 opacity-70 animate-halo" />
@@ -148,6 +155,17 @@ export default function HiveField() {
         }
         .line-active {
           filter: drop-shadow(0 0 6px rgba(96,96,255,0.5));
+        }
+        .node-active {
+          box-shadow: 0 0 35px rgba(96,96,255,0.45), 0 0 18px rgba(56,232,255,0.35);
+        }
+        .node-pulse {
+          animation: chorus 2.8s ease-in-out infinite;
+        }
+        @keyframes chorus {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.12); box-shadow: 0 0 35px rgba(245,193,91,0.45); }
+          100% { transform: scale(1); }
         }
       `}</style>
     </div>
