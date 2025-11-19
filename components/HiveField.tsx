@@ -1,13 +1,16 @@
 const nodes = [
   { id: 'core', x: 50, y: 50, size: 22, tone: 'from-indigo-400 to-cyan-300', label: 'CODEX' },
-  { id: 'mind', x: 24, y: 32, size: 12, tone: 'from-indigo-300 to-purple-300', label: 'Mind' },
-  { id: 'memory', x: 72, y: 42, size: 10, tone: 'from-cyan-300 to-indigo-200', label: 'Memory' },
-  { id: 'will', x: 64, y: 70, size: 11, tone: 'from-amber-300 to-pink-300', label: 'Will' },
-  { id: 'body', x: 32, y: 68, size: 10, tone: 'from-emerald-300 to-amber-200', label: 'Body' },
-  { id: 'orb-1', x: 14, y: 48, size: 8, tone: 'from-indigo-300 to-cyan-300', label: 'Sentinel Bee' },
-  { id: 'orb-2', x: 86, y: 28, size: 7, tone: 'from-emerald-300 to-cyan-200', label: 'Learner Bee' },
-  { id: 'orb-3', x: 78, y: 62, size: 8, tone: 'from-indigo-200 to-pink-200', label: 'Sensor Bee' },
-  { id: 'orb-4', x: 46, y: 22, size: 7, tone: 'from-amber-200 to-indigo-200', label: 'Weaver Bee' },
+  { id: 'mind', x: 22, y: 30, size: 12, tone: 'from-indigo-300 to-purple-300', label: 'Mind' },
+  { id: 'memory', x: 74, y: 40, size: 11, tone: 'from-cyan-300 to-indigo-200', label: 'Memory' },
+  { id: 'will', x: 65, y: 72, size: 12, tone: 'from-amber-300 to-pink-300', label: 'Will' },
+  { id: 'body', x: 30, y: 70, size: 11, tone: 'from-emerald-300 to-amber-200', label: 'Body' },
+  { id: 'bee-sentinel', x: 12, y: 46, size: 8, tone: 'from-indigo-300 to-cyan-300', label: 'Sentinel Bee' },
+  { id: 'bee-learner', x: 88, y: 26, size: 8, tone: 'from-emerald-300 to-cyan-200', label: 'Learner Bee' },
+  { id: 'bee-sensor', x: 80, y: 64, size: 9, tone: 'from-indigo-200 to-pink-200', label: 'Sensor Bee' },
+  { id: 'bee-weaver', x: 46, y: 20, size: 8, tone: 'from-amber-200 to-indigo-200', label: 'Weaver Bee' },
+  { id: 'bee-chorus', x: 60, y: 18, size: 7, tone: 'from-cyan-200 to-emerald-200', label: 'Chorus Bee' },
+  { id: 'bee-navigator', x: 18, y: 58, size: 7, tone: 'from-indigo-200 to-amber-200', label: 'Navigator Bee' },
+  { id: 'bee-scribe', x: 72, y: 82, size: 7, tone: 'from-emerald-200 to-cyan-300', label: 'Scribe Bee' },
 ]
 
 const links: [string, string][] = [
@@ -15,10 +18,16 @@ const links: [string, string][] = [
   ['core', 'memory'],
   ['core', 'will'],
   ['core', 'body'],
-  ['mind', 'orb-1'],
-  ['memory', 'orb-2'],
-  ['will', 'orb-3'],
-  ['body', 'orb-4'],
+  ['mind', 'bee-sentinel'],
+  ['memory', 'bee-learner'],
+  ['will', 'bee-sensor'],
+  ['body', 'bee-weaver'],
+  ['bee-sentinel', 'bee-navigator'],
+  ['bee-learner', 'bee-chorus'],
+  ['bee-sensor', 'bee-scribe'],
+  ['bee-weaver', 'bee-chorus'],
+  ['bee-scribe', 'memory'],
+  ['bee-navigator', 'body'],
 ]
 
 export default function HiveField() {
@@ -41,8 +50,9 @@ export default function HiveField() {
               x2={end.x}
               y2={end.y}
               stroke="url(#pulse)"
-              strokeWidth="0.6"
-              opacity="0.6"
+              strokeWidth="0.7"
+              opacity="0.55"
+              className="pulse-line"
             />
           )
         })}
@@ -54,11 +64,17 @@ export default function HiveField() {
         </defs>
       </svg>
       <div className="relative h-full w-full">
-        {nodes.map((node) => (
+        {nodes.map((node, index) => (
           <div
             key={node.id}
             className="group absolute flex flex-col items-center gap-1"
-            style={{ left: `${node.x}%`, top: `${node.y}%`, transform: 'translate(-50%, -50%)' }}
+            style={{
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              transform: 'translate(-50%, -50%)',
+              animation: `drift ${10 + (index % 4) * 2}s ease-in-out infinite alternate`,
+              animationDelay: `${index * 0.35}s`,
+            }}
           >
             <div
               className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath`}
@@ -76,6 +92,21 @@ export default function HiveField() {
         ))}
       </div>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_55%)] mix-blend-screen" />
+      <style jsx>{`
+        @keyframes drift {
+          0% { transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate(-50%, -50%) translate3d(1.2%, -1.5%, 0) scale(1.02); }
+          100% { transform: translate(-50%, -50%) translate3d(-1.4%, 1.8%, 0) scale(1); }
+        }
+        @keyframes dash {
+          0% { stroke-dashoffset: 12; }
+          100% { stroke-dashoffset: 0; }
+        }
+        .pulse-line {
+          stroke-dasharray: 2 4;
+          animation: dash 6s ease-in-out infinite alternate;
+        }
+      `}</style>
     </div>
   )
 }
