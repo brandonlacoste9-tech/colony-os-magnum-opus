@@ -8,6 +8,10 @@ type BeeNode = {
   drift?: number
 }
 
+'use client'
+
+import { useMemo, useState } from 'react'
+
 const nodes: BeeNode[] = [
   { id: 'core', x: 50, y: 50, size: 22, tone: 'from-indigo-400 to-cyan-300', label: 'CODEX' },
   { id: 'mind', x: 22, y: 30, size: 12, tone: 'from-indigo-300 to-purple-300', label: 'Mind', drift: 11 },
@@ -47,6 +51,16 @@ const links: [string, string][] = [
 ]
 
 export default function HiveField() {
+  const [hoverId, setHoverId] = useState<string | null>(null)
+  const linkMap = useMemo(() => {
+    const map = new Map<string, string[]>()
+    links.forEach(([a, b]) => {
+      map.set(a, [...(map.get(a) ?? []), b])
+      map.set(b, [...(map.get(b) ?? []), a])
+    })
+    return map
+  }, [])
+
   return (
     <div className="relative h-80 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[rgba(5,9,20,0.8)] to-[rgba(11,18,36,0.8)]">
       <div className="absolute inset-0 opacity-60 blur-3xl">
@@ -58,6 +72,7 @@ export default function HiveField() {
           const start = nodes.find((n) => n.id === a)
           const end = nodes.find((n) => n.id === b)
           if (!start || !end) return null
+          const active = hoverId && (hoverId === start.id || hoverId === end.id)
           return (
             <line
               key={`${a}-${b}`}
@@ -66,9 +81,9 @@ export default function HiveField() {
               x2={end.x}
               y2={end.y}
               stroke="url(#pulse)"
-              strokeWidth="0.7"
-              opacity="0.55"
-              className="pulse-line"
+              strokeWidth={active ? 1.2 : 0.7}
+              opacity={active ? 0.9 : 0.55}
+              className={`pulse-line ${active ? 'line-active' : ''}`}
             />
           )
         })}
@@ -95,9 +110,13 @@ export default function HiveField() {
               animation: `drift ${node.drift ?? 10 + (index % 4) * 2}s ease-in-out infinite alternate`,
               animationDelay: `${index * 0.35}s`,
             }}
+            onMouseEnter={() => setHoverId(node.id)}
+            onMouseLeave={() => setHoverId(null)}
           >
             <div
-              className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath`}
+              className={`relative flex items-center justify-center rounded-full bg-gradient-to-br ${node.tone} shadow-[0_0_25px_rgba(96,96,255,0.35)] animate-breath ${
+                hoverId === node.id || (hoverId && linkMap.get(hoverId)?.includes(node.id)) ? 'scale-[1.08]' : ''
+              } transition-transform duration-500`}
               style={{ width: `${node.size}px`, height: `${node.size}px` }}
             >
               <div className="absolute inset-0 rounded-full blur-lg bg-white/25 opacity-70 animate-halo" />
@@ -126,6 +145,9 @@ export default function HiveField() {
         .pulse-line {
           stroke-dasharray: 2 4;
           animation: dash 7s ease-in-out infinite alternate;
+        }
+        .line-active {
+          filter: drop-shadow(0 0 6px rgba(96,96,255,0.5));
         }
       `}</style>
     </div>

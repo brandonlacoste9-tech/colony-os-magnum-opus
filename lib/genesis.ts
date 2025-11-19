@@ -55,15 +55,24 @@ export async function loadGenesisRecords(): Promise<GenesisEntry[]> {
   }
 }
 
-function parseGenesis(filename: string, content: string): GenesisEntry {
+export function parseGenesis(filename: string, content: string): GenesisEntry {
   const grab = (label: string, fallback = '') => {
-    const match = content.match(new RegExp(`\\*\\*${label}.*?:\\*\\*\\s*(.+)`, 'i'))
-    return match ? match[1].trim() : fallback
+    const boldMatch = content.match(new RegExp(`\\*\\*${label}.*?:\\*\\*\\s*(.+)`, 'i'))
+    if (boldMatch) return boldMatch[1].trim()
+    const bulletMatch = content.match(new RegExp(`${label}\\s*:\\s*([^\\n]+)`, 'i'))
+    if (bulletMatch) return bulletMatch[1].trim()
+    const inlineMatch = content.match(new RegExp(`${label}[^\\n]*:\\s*([^\\n]+)`, 'i'))
+    if (inlineMatch) return inlineMatch[1].trim()
+    return fallback
   }
 
   const timestamp = grab('Timestamp \\(UTC\\)', new Date().toISOString())
   const participants = grab('Participants', 'Unknown')
-  const title = grab('Genesis Record', filename.replace('.md', ''))
+
+  // Prefer an H1 like "# Genesis Record: <Title>" before falling back to label
+  const headingLine = content.split('\n').find((line) => line.trim().startsWith('#'))
+  const headingTitle = headingLine?.split(':').slice(1).join(':').trim()
+  const title = headingTitle?.length ? headingTitle : grab('Genesis Record', filename.replace('.md', ''))
 
   const markers = {
     resonance: grab('Resonance State', 'UNKNOWN'),
@@ -76,7 +85,8 @@ function parseGenesis(filename: string, content: string): GenesisEntry {
   const summary =
     content
       .split('\n')
-      .find((line) => line && !line.startsWith('#') && !line.startsWith('**'))?.trim() ||
+      .map((line) => line.trim())
+      .find((line) => line && !line.startsWith('#') && !line.startsWith('**')) ||
     'A genesis moment was recorded.'
 
   return {
