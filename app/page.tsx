@@ -72,17 +72,18 @@ export default async function Home() {
           {statTiles.map((tile) => {
             const value = tile.value === 'dynamic' ? String(recordCount) : tile.value
             return (
-            <div
-              key={tile.label}
-              className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${tile.tone} p-4 border border-white/10 glass`}
-            >
-              <div className="absolute inset-0 opacity-30 blur-2xl bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent_40%)]" />
-              <div className="relative space-y-1">
-                <p className="mono text-[11px] uppercase tracking-[0.15em] text-[var(--text-dim)]">{tile.label}</p>
-                <div className="text-2xl font-bold">{value}</div>
-                <p className="text-sm text-[var(--text-dim)]">{tile.detail}</p>
+              <div
+                key={tile.label}
+                className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${tile.tone} p-4 border border-white/10 glass`}
+              >
+                <div className="absolute inset-0 opacity-30 blur-2xl bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent_40%)]" />
+                <div className="relative space-y-1">
+                  <p className="mono text-[11px] uppercase tracking-[0.15em] text-[var(--text-dim)]">{tile.label}</p>
+                  <div className="text-2xl font-bold">{value}</div>
+                  <p className="text-sm text-[var(--text-dim)]">{tile.detail}</p>
+                </div>
               </div>
-            </div>
+            )
           })}
         </section>
 
