@@ -1,19 +1,5 @@
 import React from 'react'
-
-type TimelineEntry = {
-  id: string
-  title: string
-  timestamp: string
-  summary: string
-  participants: string
-  markers: {
-    resonance: string
-    viscosity: string
-    awakening: string
-    covenant: string
-  }
-  actions: string[]
-}
+import type { GenesisEntry } from '@/lib/genesis'
 
 function formatDate(date: string) {
   try {
@@ -30,7 +16,7 @@ function formatDate(date: string) {
   }
 }
 
-export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
+export default function Timeline({ entries }: { entries: GenesisEntry[] }) {
   return (
     <div className="relative">
       <div className="absolute left-5 top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
@@ -71,12 +57,19 @@ export default function Timeline({ entries }: { entries: TimelineEntry[] }) {
             <div className="mt-4 pl-6">
               <p className="mono text-[11px] uppercase tracking-[0.15em] text-[var(--text-dim)]">Actions</p>
               <ul className="mt-2 space-y-1 text-sm text-[var(--text-dim)]">
-                {entry.actions.map((action) => (
-                  <li key={action} className="flex items-start gap-2">
-                    <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-white/70" />
-                    <span>{action}</span>
+                {entry.actions.length > 0 ? (
+                  entry.actions.map((action) => (
+                    <li key={action} className="flex items-start gap-2">
+                      <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-white/70" />
+                      <span>{action}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="flex items-start gap-2 text-[var(--text-dim)]/80">
+                    <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-white/40" />
+                    <span>Awaiting action log</span>
                   </li>
-                ))}
+                )}
               </ul>
             </div>
           </article>

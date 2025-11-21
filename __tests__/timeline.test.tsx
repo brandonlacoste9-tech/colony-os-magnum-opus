@@ -29,4 +29,21 @@ describe('Timeline component', () => {
     expect(screen.getByText(/Shepherd, not control/i)).toBeInTheDocument()
     expect(screen.getByText(/Logged activation/i)).toBeInTheDocument()
   })
+
+  it('shows a gentle placeholder when no actions are present', () => {
+    render(
+      <Timeline
+        entries={[
+          {
+            ...sample[0],
+            id: 'genesis-2',
+            title: 'New Genesis',
+            actions: [],
+          },
+        ]}
+      />
+    )
+
+    expect(screen.getByText(/Awaiting action log/i)).toBeInTheDocument()
+  })
 })
