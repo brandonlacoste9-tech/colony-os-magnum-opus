@@ -15,44 +15,42 @@ interface Node {
   color: string
 }
 
+const createInitialNodes = (): Node[] => {
+  const nodeCount = 50
+  const goldenRatio = (1 + Math.sqrt(5)) / 2
+  const angleIncrement = Math.PI * 2 * goldenRatio
+
+  return Array.from({ length: nodeCount }, (_, i) => {
+    const t = i / nodeCount
+    const inclination = Math.acos(1 - 2 * t)
+    const azimuth = angleIncrement * i
+
+    const radius = 200
+    const x = radius * Math.sin(inclination) * Math.cos(azimuth)
+    const y = radius * Math.sin(inclination) * Math.sin(azimuth)
+    const z = radius * Math.cos(inclination)
+
+    return {
+      id: i,
+      x,
+      y,
+      z,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      vz: (Math.random() - 0.5) * 0.5,
+      radius: 3 + Math.random() * 2,
+      color: i % 3 === 0 ? '#a855f7' : i % 3 === 1 ? '#ec4899' : '#8b5cf6',
+    }
+  })
+}
+
 export default function Neurosphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [nodes, setNodes] = useState<Node[]>([])
+  const [nodes] = useState<Node[]>(createInitialNodes)
   const [cognitiveState, setCognitiveState] = useState('Active Processing')
   const animationRef = useRef<number>()
 
   useEffect(() => {
-    // Initialize nodes using Fibonacci sphere distribution
-    const nodeCount = 50
-    const goldenRatio = (1 + Math.sqrt(5)) / 2
-    const angleIncrement = Math.PI * 2 * goldenRatio
-
-    const initialNodes: Node[] = Array.from({ length: nodeCount }, (_, i) => {
-      const t = i / nodeCount
-      const inclination = Math.acos(1 - 2 * t)
-      const azimuth = angleIncrement * i
-
-      const radius = 200
-      const x = radius * Math.sin(inclination) * Math.cos(azimuth)
-      const y = radius * Math.sin(inclination) * Math.sin(azimuth)
-      const z = radius * Math.cos(inclination)
-
-      return {
-        id: i,
-        x,
-        y,
-        z,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        vz: (Math.random() - 0.5) * 0.5,
-        radius: 3 + Math.random() * 2,
-        color: i % 3 === 0 ? '#a855f7' : i % 3 === 1 ? '#ec4899' : '#8b5cf6',
-      }
-    })
-
-    setNodes(initialNodes)
-
-    // Rotate cognitive states
     const states = [
       'Active Processing',
       'Pattern Recognition',

@@ -17,6 +17,29 @@ interface MutationLog {
   message: string
 }
 
+const mutationLogSeedTimestamp = Date.now()
+
+const initialMutationLogs: MutationLog[] = [
+  {
+    id: '1',
+    timestamp: new Date(mutationLogSeedTimestamp).toISOString(),
+    type: 'evolution',
+    message: 'Neurosphere achieved cognitive fusion - semantic viscosity reached 0.0',
+  },
+  {
+    id: '2',
+    timestamp: new Date(mutationLogSeedTimestamp - 60000).toISOString(),
+    type: 'optimization',
+    message: 'Optimized task estimation algorithm with Gemini 2.5 Flash integration',
+  },
+  {
+    id: '3',
+    timestamp: new Date(mutationLogSeedTimestamp - 120000).toISOString(),
+    type: 'adaptation',
+    message: 'Swarm intelligence patterns stabilized across all four strata',
+  },
+]
+
 export default function SensoryCortex() {
   const [metrics, setMetrics] = useState<SystemMetric[]>([
     { name: 'Neural Throughput', value: 87, status: 'healthy', unit: '%' },
@@ -25,26 +48,7 @@ export default function SensoryCortex() {
     { name: 'Cognitive Load', value: 45, status: 'healthy', unit: '%' },
   ])
 
-  const [mutationLogs, setMutationLogs] = useState<MutationLog[]>([
-    {
-      id: '1',
-      timestamp: new Date().toISOString(),
-      type: 'evolution',
-      message: 'Neurosphere achieved cognitive fusion - semantic viscosity reached 0.0',
-    },
-    {
-      id: '2',
-      timestamp: new Date(Date.now() - 60000).toISOString(),
-      type: 'optimization',
-      message: 'Optimized task estimation algorithm with Gemini 2.5 Flash integration',
-    },
-    {
-      id: '3',
-      timestamp: new Date(Date.now() - 120000).toISOString(),
-      type: 'adaptation',
-      message: 'Swarm intelligence patterns stabilized across all four strata',
-    },
-  ])
+  const [mutationLogs] = useState<MutationLog[]>(initialMutationLogs)
 
   useEffect(() => {
     // Simulate real-time metric updates
