@@ -32,6 +32,10 @@
     "eslint-config-next": "14.2.32",
     "jsdom": "^25.0.1",
     "playwright": "^1.41.0"
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.2.32",
+    "playwright": "^1.41.0",
+    "jsdom": "^25.0.1"
   },
   "engines": {
     "node": ">=18.0.0"
