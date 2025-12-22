@@ -36,6 +36,7 @@ class ColonyLink {
 
     this.socket.on('connect', () => {
       console.log('🧠 Magnum Opus: Connected to Core.');
+              this.socket?.emit('join_channel', 'global_feed');
     });
   }
 
@@ -45,7 +46,15 @@ class ColonyLink {
 
   public on(event: string, callback: (data: any) => void) {
     this.socket?.on(event, callback);
+  
+  
+    public subscribeToNotifications(callback: (notification: any) => void) {
+    this.socket?.on('notification', callback);
   }
+
+  public sendMessage(content: string) {
+    this.socket?.emit('send_message', { content });
+  }}
 }
 
 export const colonyLink = new ColonyLink();

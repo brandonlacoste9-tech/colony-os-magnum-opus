@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ColonyProvider } from '@/components/providers/colony-provider'
+import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
   title: 'Colony OS: Magnum Opus - The Dreaming Hive',
@@ -21,6 +22,7 @@ export default function RootLayout({
             <body>
         <ColonyProvider>
           {children}
+                  <Toaster />
         </ColonyProvider>
     </html>
   )
