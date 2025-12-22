@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { colonyLink } from '@/lib/colony-link';
+import { toast } from 'sonner';
 
 interface ColonyContextType {
   isConnected: boolean;
@@ -17,6 +18,14 @@ export function ColonyProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+        const handleNotification = (notification: any) => {
+      toast.info(notification.title || 'New Notification', {
+        description: notification.message || "Update from Colony Core"
+      });
+    };
+
+    colonyLink.subscribeToNotifications(handleNotification);
+
     if (colonyLink.socket) {
       colonyLink.socket.on('connect', () => setIsConnected(true));
       colonyLink.socket.on('disconnect', () => setIsConnected(false));
