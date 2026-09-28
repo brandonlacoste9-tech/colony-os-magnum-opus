@@ -1,5 +1,5 @@
-import CreatePost from '@/components/feed/create-post';
-import LiveFeed from '@/components/feed/live-feed';
+import { CreatePost } from '@/components/feed/create-post';
+import { LiveFeed } from '@/components/feed/live-feed';
 
 export default function DashboardPage() {
   return (

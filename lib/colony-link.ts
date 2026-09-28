@@ -10,7 +10,16 @@ const COLONY_API_URL = process.env.NEXT_PUBLIC_COLONY_API_URL || 'http://localho
 
 class ColonyLink {
   public socket: Socket | null = null;
-  private supabase = createClient();
+  private _supabase: ReturnType<typeof createBrowserClient> | null | undefined;
+
+  private get supabase() {
+    if (this._supabase === undefined) {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      this._supabase = url && key ? createClient() : null;
+    }
+    return this._supabase;
+  }
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -19,7 +28,7 @@ class ColonyLink {
   }
 
   private async connect() {
-    const { data: { session } } = await this.supabase.auth.getSession();
+    const session = (await this.supabase?.auth.getSession())?.data.session;
     const token = session?.access_token;
 
     // Guest users don't get a socket connection
@@ -46,15 +55,15 @@ class ColonyLink {
 
   public on(event: string, callback: (data: any) => void) {
     this.socket?.on(event, callback);
-  
-  
-    public subscribeToNotifications(callback: (notification: any) => void) {
+  }
+
+  public subscribeToNotifications(callback: (notification: any) => void) {
     this.socket?.on('notification', callback);
   }
 
   public sendMessage(content: string) {
     this.socket?.emit('send_message', { content });
-  }}
+  }
 }
 
 export const colonyLink = new ColonyLink();

@@ -53,12 +53,12 @@ async function captureMetrics(page: import('playwright').Page, loadStart: number
   const navMetrics = await page.evaluate(() => {
     const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
     const paints = performance.getEntriesByType('paint') as PerformanceEntry[]
-    const fcp = paints.find((p) => p.name === 'first-contentful-paint')?.startTime ?? null
+    const fcp = paints.find((p) => p.name === 'first-contentful-paint')?.startTime ?? undefined
     const domNodes = document.getElementsByTagName('*').length
     return {
       loadTimeMs: nav ? nav.duration : null,
-      domCompleteMs: nav?.domComplete ?? null,
-      domInteractiveMs: nav?.domInteractive ?? null,
+      domCompleteMs: nav?.domComplete ?? undefined,
+      domInteractiveMs: nav?.domInteractive ?? undefined,
       fcpMs: fcp,
       domNodes,
       layoutShift: 0,
