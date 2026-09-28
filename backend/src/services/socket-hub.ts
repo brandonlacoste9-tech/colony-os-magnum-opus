@@ -1,10 +1,17 @@
 import { Server, Socket } from 'socket.io';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_KEY || ''
-);
+// Lazily created — only needed when ENABLE_DB_LOGGING=true. Never throws
+// at startup when SUPABASE_URL / SUPABASE_SERVICE_KEY are unset.
+let _supabase: SupabaseClient | null | undefined;
+function getSupabase(): SupabaseClient | null {
+  if (_supabase === undefined) {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_KEY;
+    _supabase = url && key ? createClient(url, key) : null;
+  }
+  return _supabase;
+}
 
 export function initializeSocketHub(io: Server) {
   console.log('🐝 Socket Hub initializing...');
@@ -29,7 +36,7 @@ export function initializeSocketHub(io: Server) {
 
         // Log to Supabase (optional)
         if (process.env.ENABLE_DB_LOGGING === 'true') {
-          await supabase.from('entity_updates').insert({
+          await getSupabase()?.from('entity_updates').insert({
             entity_type: data.entityType,
             entity_id: data.entityId,
             update_data: data.updateData,
@@ -47,6 +54,19 @@ export function initializeSocketHub(io: Server) {
     socket.on('notification:send', (notification) => {
       console.log('🔔 Broadcasting notification:', notification);
       io.emit('notification:received', notification);
+    });
+
+    // Handle feed posts from dashboard clients (CreatePost component)
+    socket.on('send_message', (data) => {
+      const content = typeof data === 'string' ? data : data?.content;
+      if (!content) return;
+      console.log('📝 Feed post received, broadcasting');
+      io.emit('new_post', {
+        id: `hive-${Date.now()}-${Math.floor(Math.random() * 1e6)}`,
+        author: { name: 'Bee', handle: 'beekeeper' },
+        content,
+        timestamp: new Date().toISOString(),
+      });
     });
 
     // Handle disconnection

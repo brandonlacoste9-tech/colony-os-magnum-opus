@@ -31,14 +31,14 @@ class ColonyLink {
     const session = (await this.supabase?.auth.getSession())?.data.session;
     const token = session?.access_token;
 
-    // Guest users don't get a socket connection
+    // Guests connect without a token (read-only mission control view) —
+    // the hub doesn't require auth. Signed-in users send their token.
     if (!token) {
-      console.log("🌱 Magnum Opus: Guest mode (No Socket)");
-      return;
+      console.log("🌱 Magnum Opus: Guest mode (read-only feed)");
     }
 
     this.socket = io(COLONY_API_URL, {
-      auth: { token },
+      ...(token ? { auth: { token } } : {}),
       transports: ['websocket'],
       autoConnect: true
     });
